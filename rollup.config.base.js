@@ -5,7 +5,7 @@ import replace from 'rollup-plugin-replace';
 import bucklescript from 'rollup-plugin-bucklescript';
 
 export default {
-  input: 'src/Component.re',
+  input: 'src/Minimap.re',
   plugins: [
     bucklescript(),
     alias({
@@ -17,7 +17,7 @@ export default {
     resolve(),
     commonjs({
       include: ['node_modules/**']
-    }),
+    })
   ],
   external: ['react', 'react-dom']
-}
+};

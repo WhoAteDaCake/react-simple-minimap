@@ -13,19 +13,20 @@ module.exports = {
   devServer: {
     contentBase: '.',
     open: true,
-    hot: true
+    hot: true,
+    noInfo: true
   },
   resolve: {
     alias: {
-      [name]: path.resolve(__dirname, './temp/' + name + '.js'),
-    },
+      [name]: path.resolve(__dirname, './temp/' + name + '.js')
+    }
   },
   plugins: [
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, 'example/index.html'),
-      inject: true,
+      inject: true
     })
   ],
   module: {
@@ -36,19 +37,13 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              ['env', { modules: false }],
-              'react'
-            ],
+            presets: [['env', { modules: false }], 'react']
           }
         }
       },
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader'
-        ]
+        use: ['style-loader', 'css-loader']
       }
     ]
   }
