@@ -12,7 +12,6 @@ module.exports = {
   devtool: 'eval',
   devServer: {
     contentBase: '.',
-    open: true,
     hot: true,
     noInfo: true
   },

@@ -2,12 +2,19 @@ import baseConfig from './rollup.config.base';
 
 import { name } from './package.json';
 
-export default {
+let config = {
   ...baseConfig,
-  output: [{
-    file: `temp/${name}.js`,
-    format: 'es',
-    name,
-    sourcemap: 'inline'
-  }],
+  watch: {
+    include: 'src/**/*'
+  },
+  output: [
+    {
+      file: `temp/${name}.js`,
+      format: 'es',
+      name,
+      sourcemap: 'inline'
+    }
+  ]
 };
+
+export default config;

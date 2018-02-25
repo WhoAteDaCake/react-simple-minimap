@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import NumericInput from '../temp/reason-react-rollup-starter-kit';
+import { text } from './text';
+
+import './index.css';
 
 class App extends Component {
   render() {
     return (
-      <div>
-        <NumericInput age="asdasdas" />
+      <div className="cont">
+        <NumericInput height={100} width={100}>
+          <div dangerouslySetInnerHTML={{ __html: text }} />
+        </NumericInput>
       </div>
     );
   }

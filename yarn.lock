@@ -1116,9 +1116,13 @@ bs-enzyme@^0.3.1:
     enzyme "^3.2.0"
     react-test-renderer "^16.1.1"
 
-bs-platform@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-2.1.0.tgz#63560ff8f7142c9c0631559df1c35590b9f6d8b2"
+bs-platform@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-2.2.1.tgz#e22b82143a43a10630d7b2040aab87648b12190c"
+
+bs-webapi@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/bs-webapi/-/bs-webapi-0.8.3.tgz#b0e331146ab44396550fba70fccb0bbd114afba0"
 
 bsb-js@^1.0.1:
   version "1.0.2"
@@ -5543,9 +5547,9 @@ rollup-pluginutils@^2.0.1:
     estree-walker "^0.3.0"
     micromatch "^2.3.11"
 
-rollup@^0.53.3:
-  version "0.53.4"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.53.4.tgz#f92ce56ee1d097ad5b6f13951bc80db5fef18113"
+rollup@^0.56.3:
+  version "0.56.3"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.56.3.tgz#7900695531afa1badd3235f285cc4aa0d49ce254"
 
 rst-selector-parser@^2.2.3:
   version "2.2.3"
