@@ -44,16 +44,14 @@ let debounce = (f, wait) => {
   };
 };
 
-Js.log(Js.Date.now());
-
-let throttle = (f, wait) => {
+let throttle = (f, t) => {
   let timeout = ref(None);
+  let wait = float_of_int(t);
   (x, y) =>
     switch timeout^ {
     | Some(time) =>
-      if (time -. Js.Date.now() >= wait) {
+      if (Js.Date.now() -. time >= wait) {
         f(x, y);
-        timeout := Some(Js.Date.now());
       }
     | None =>
       f(x, y);

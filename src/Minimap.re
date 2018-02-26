@@ -45,7 +45,7 @@ let init = (state, width, height, selector, markerColor) =>
 
 let resync = (a, b) => Js.log((a, b));
 
-let resyncI = Utils.throttle((a, b) => resync(a, b), 2000);
+let resyncI = Utils.throttle((a, b) => resync(a, b), 200);
 
 let resyncReducer = (e, {ReasonReact.state}) => resyncI(e, state);
 
