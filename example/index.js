@@ -9,7 +9,7 @@ class App extends Component {
   render() {
     return (
       <div className="cont">
-        <NumericInput height={100} width={100}>
+        <NumericInput height={150} width={100}>
           <div dangerouslySetInnerHTML={{ __html: text }} />
         </NumericInput>
       </div>

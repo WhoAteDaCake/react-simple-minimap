@@ -4,7 +4,13 @@
   "main": "dist/reason-react-rollup-starter-kit.common.js",
   "module": "dist/reason-react-rollup-starter-kit.esm.js",
   "unpkg": "dist/reason-react-rollup-starter-kit.min.js",
-  "keywords": ["reasonml", "react", "rollup", "starter", "lib"],
+  "keywords": [
+    "reasonml",
+    "react",
+    "rollup",
+    "starter",
+    "lib"
+  ],
   "homepage": "https://github.com/katmai7/reason-react-rollup-starter-kit",
   "author": {
     "name": "Vitalii Hudyma",
@@ -21,8 +27,7 @@
     "dev:build": "cross-env NODE_ENV=development rollup -c rollup.config.dev.js",
     "prod:build": "rimraf dist && cross-env NODE_ENV=production rollup -c rollup.config.prod.js",
     "dev": "concurrently \" ./watch-dev \" \" npm run example \" ",
-    "example":
-      "cross-env NODE_ENV=development webpack-dev-server -w --config webpack.config.example.js",
+    "example": "cross-env NODE_ENV=development webpack-dev-server -w --config webpack.config.example.js",
     "test": "bsb -make-world && jest",
     "clean": "bsb -clean-world && rimraf dist temp lib",
     "make": "bsb -make-world"
@@ -64,10 +69,13 @@
     "webpack-dev-server": "^2.11.1"
   },
   "jest": {
-    "roots": ["lib/js/__tests__"]
+    "roots": [
+      "lib/js/__tests__"
+    ]
   },
   "dependencies": {
     "bs-webapi": "^0.8.3",
-    "concurrently": "^3.5.1"
+    "concurrently": "^3.5.1",
+    "vrroom": "github:glennsl/vrroom"
   }
 }
