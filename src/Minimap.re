@@ -36,17 +36,22 @@ let initialState = () => {
   }
 };
 
-let init = (state, width, height, selector) => {
-  let sourceDimensions =
-    switch state.sourceRef^ {
-    | Some(r) => Some(Markers.create(r, selector, width, height))
-    | _ => None
-    };
-  sourceDimensions;
-};
+/* TODO Group marker data to tuple */
+let init = (state, width, height, selector, markerColor) =>
+  switch state.sourceRef^ {
+  | Some(r) => Some(Markers.create(r, selector, width, height, markerColor))
+  | _ => None
+  };
+
+let resync = (a, b) => Js.log((a, b));
+
+let resyncI = Utils.throttle((a, b) => resync(a, b), 2000);
+
+let resyncReducer = (e, {ReasonReact.state}) => resyncI(e, state);
 
 /* Calculate minimap props inside this file so it better represents the structure?s */
-let make = (~width, ~height, ~selector="mark", _children) => {
+let make =
+    (~width, ~height, ~selector="mark", ~markerColor="yellow", _children) => {
   if (Js.typeof(width) != "number") {
     Js.Exn.raiseError("Minimap expected width to be a number");
   } else if (Js.typeof(height) != "number") {
@@ -57,7 +62,7 @@ let make = (~width, ~height, ~selector="mark", _children) => {
     initialState,
     reducer: ((), state) => ReasonReact.NoUpdate,
     didMount: ({state}) =>
-      switch (init(state, width, height, selector)) {
+      switch (init(state, width, height, selector, markerColor)) {
       | Some({markers, minimapProps}) =>
         ReasonReact.Update({...state, markers, minimapProps})
       | None => ReasonReact.NoUpdate
@@ -71,7 +76,10 @@ let make = (~width, ~height, ~selector="mark", _children) => {
           ~left=Utils.Css.intToPx(self.state.minimapProps.left),
           ()
         );
-      <div className="minimap-root" ref=(self.handle(setSourceRef))>
+      <div
+        className="minimap-root"
+        ref=(self.handle(setSourceRef))
+        onScroll=(self.handle(resyncReducer))>
         <div className="minimap" style ref=(self.handle(setMapRef))>
           <Fragment> ...self.state.markers </Fragment>
         </div>
@@ -85,5 +93,10 @@ let make = (~width, ~height, ~selector="mark", _children) => {
 
 let default =
   ReasonReact.wrapReasonForJs(~component, _jsProps =>
-    make(~width=_jsProps##width, ~height=_jsProps##height, _jsProps##children)
+    make(
+      ~width=_jsProps##width,
+      ~height=_jsProps##height,
+      ~markerColor=_jsProps##markerColor,
+      _jsProps##children
+    )
   );

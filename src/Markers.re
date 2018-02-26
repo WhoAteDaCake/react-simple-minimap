@@ -18,10 +18,9 @@ type spec = {
 
 let toStyle = (n1, n2) => Maths.Mult.ifToF(n1, n2) |> Utils.Css.floatToPx;
 
-let create = (element, selector, minimapW, minimapH) : spec => {
+let create = (element, selector, minimapW, minimapH, markerColor) : spec => {
   let scroll = Utils.elemScroll(element);
   let sourceRect = Element.getBoundingClientRect(element);
-  let nodes = Element.querySelectorAll(selector, element);
   let ratioX = Maths.Div.iiToF(minimapW, scroll.width);
   let ratioY = Maths.Div.iiToF(minimapH, scroll.height);
   let markers =
@@ -40,10 +39,18 @@ let create = (element, selector, minimapW, minimapH) : spec => {
             DomRect.top(markerRect) + scroll.top - DomRect.top(sourceRect),
             ratioY
           );
-        let style = ReactDOMRe.Style.make(~width, ~height, ~left, ~top, ());
+        let style =
+          ReactDOMRe.Style.make(
+            ~width,
+            ~height,
+            ~left,
+            ~top,
+            ~backgroundColor=markerColor,
+            ()
+          );
         <div key=(string_of_int(i)) style className="minimap-children" />;
       },
-      NodeList.toArray(nodes)
+      Element.querySelectorAll(selector, element) |> NodeList.toArray
     );
   let minimapProps = {
     top: DomRect.top(sourceRect),
