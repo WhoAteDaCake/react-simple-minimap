@@ -64,6 +64,21 @@ let init = (state, width, height, selector, markerColor) =>
   | _ => None
   };
 
+let resyncReducer =
+  Utils.throttle4(
+    (minimapWidth, minimapHeight, event, self) =>
+      switch self.ReasonReact.state.sourceRef^ {
+      | Some(re) =>
+        let (left, top, width, height) =
+          resync(re, minimapWidth, minimapHeight);
+        let style = ReactDOMRe.Style.make(~width, ~height, ~left, ~top, ());
+        let viewPort = <div style className="minimap-viewport" />;
+        self.ReasonReact.send(SetViewPort(viewPort));
+      | None => Js.log("Could not find source ref")
+      },
+    50
+  );
+
 /* Calculate minimap props inside this file so it better represents the structure?s */
 let make =
     (~width, ~height, ~selector="mark", ~markerColor="yellow", _children) => {
@@ -72,19 +87,6 @@ let make =
   } else if (Js.typeof(height) != "number") {
     Js.Exn.raiseError("Minimap expected height to be a number");
   };
-  let resyncReducer =
-    Utils.throttle(
-      (event, self) =>
-        switch self.ReasonReact.state.sourceRef^ {
-        | Some(re) =>
-          let (left, top, width, height) = resync(re, width, height);
-          let style = ReactDOMRe.Style.make(~width, ~height, ~left, ~top, ());
-          let viewPort = <div style className="minimap-viewport" />;
-          self.ReasonReact.send(SetViewPort(viewPort));
-        | None => Js.log("Could not find source ref")
-        },
-      150
-    );
   {
     ...component,
     initialState,
@@ -111,7 +113,7 @@ let make =
       <div
         className="minimap-root"
         ref=(self.handle(setSourceRef))
-        onScroll=(self.handle(resyncReducer))>
+        onScroll=(self.handle(resyncReducer(width, height)))>
         <div className="minimap" style ref=(self.handle(setMapRef))>
           self.state.viewPort
           <Fragment> ...self.state.markers </Fragment>

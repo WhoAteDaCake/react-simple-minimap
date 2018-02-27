@@ -47,15 +47,37 @@ let debounce = (f, wait) => {
 let throttle = (f, t) => {
   let timeout = ref(None);
   let wait = float_of_int(t);
-  (x, y) =>
+  (x, y) => {
+    Js.log(timeout^);
     switch timeout^ {
     | Some(time) =>
       if (Js.Date.now() -. time >= wait) {
-        timeout := Some(Js.Date.now());
         f(x, y);
+        timeout := Some(Js.Date.now());
+      } else {
+        ();
       }
     | None =>
-      timeout := Some(Js.Date.now());
       f(x, y);
+      timeout := Some(Js.Date.now());
+    };
+  };
+};
+
+let throttle4 = (f, t) => {
+  let timeout = ref(None);
+  let wait = float_of_int(t);
+  (x, y, z, c) =>
+    switch timeout^ {
+    | Some(time) =>
+      if (Js.Date.now() -. time >= wait) {
+        f(x, y, z, c);
+        timeout := Some(Js.Date.now());
+      } else {
+        ();
+      }
+    | None =>
+      f(x, y, z, c);
+      timeout := Some(Js.Date.now());
     };
 };
