@@ -1,16 +1,20 @@
 /* open Config; */
 module Element = Webapi.Dom.Element;
 
+module DomRect = Webapi.Dom.DomRect;
+
 type state = {
   mapRef: ref(option(Dom.element)),
   sourceRef: ref(option(Dom.element)),
   containerRef: ref(option(Dom.element)),
   minimapProps: Markers.minimapProps,
-  markers: Markers.markers
+  markers: Markers.markers,
+  viewPort: ReasonReact.reactElement
 };
 
 type action =
-  | GetRef;
+  | GetRef
+  | SetViewPort(ReasonReact.reactElement);
 
 let component = ReasonReact.reducerComponent("ReasonReactExample");
 
@@ -33,7 +37,24 @@ let initialState = () => {
   minimapProps: {
     top: 1,
     left: 1
-  }
+  },
+  viewPort: ReasonReact.nullElement
+};
+
+let roundedifToF = (a, b) => Maths.Mult.ifToF(a, b) |> Maths.frnd;
+
+let resync = (source, width, height) => {
+  let rect = Element.getBoundingClientRect(source);
+  let scroll = Utils.elemScroll(source);
+  let scaleX = Maths.Div.iiToF(width, scroll.width);
+  let scaleY = Maths.Div.iiToF(height, scroll.height);
+  let lW = roundedifToF(DomRect.width(rect), scaleX);
+  let lH = roundedifToF(DomRect.height(rect), scaleY);
+  let viewX = roundedifToF(scroll.left, scaleX) |> Utils.Css.floatToPx;
+  let viewY = roundedifToF(scroll.top, scaleY) |> Utils.Css.floatToPx;
+  let viewWidth = min(float_of_int(width), lW) |> Utils.Css.floatToPx;
+  let viewHeight = min(float_of_int(height), lH) |> Utils.Css.floatToPx;
+  (viewX, viewY, viewWidth, viewHeight);
 };
 
 /* TODO Group marker data to tuple */
@@ -43,12 +64,6 @@ let init = (state, width, height, selector, markerColor) =>
   | _ => None
   };
 
-let resync = (a, b) => Js.log((a, b));
-
-let resyncI = Utils.throttle((a, b) => resync(a, b), 200);
-
-let resyncReducer = (e, {ReasonReact.state}) => resyncI(e, state);
-
 /* Calculate minimap props inside this file so it better represents the structure?s */
 let make =
     (~width, ~height, ~selector="mark", ~markerColor="yellow", _children) => {
@@ -57,10 +72,27 @@ let make =
   } else if (Js.typeof(height) != "number") {
     Js.Exn.raiseError("Minimap expected height to be a number");
   };
+  let resyncReducer =
+    Utils.throttle(
+      (event, self) =>
+        switch self.ReasonReact.state.sourceRef^ {
+        | Some(re) =>
+          let (left, top, width, height) = resync(re, width, height);
+          let style = ReactDOMRe.Style.make(~width, ~height, ~left, ~top, ());
+          let viewPort = <div style className="minimap-viewport" />;
+          self.ReasonReact.send(SetViewPort(viewPort));
+        | None => Js.log("Could not find source ref")
+        },
+      150
+    );
   {
     ...component,
     initialState,
-    reducer: ((), state) => ReasonReact.NoUpdate,
+    reducer: (action, state) =>
+      switch action {
+      | SetViewPort(viewPort) => ReasonReact.Update({...state, viewPort})
+      | _ => ReasonReact.NoUpdate
+      },
     didMount: ({state}) =>
       switch (init(state, width, height, selector, markerColor)) {
       | Some({markers, minimapProps}) =>
@@ -81,6 +113,7 @@ let make =
         ref=(self.handle(setSourceRef))
         onScroll=(self.handle(resyncReducer))>
         <div className="minimap" style ref=(self.handle(setMapRef))>
+          self.state.viewPort
           <Fragment> ...self.state.markers </Fragment>
         </div>
         <div className="content-container" ref=(self.handle(setContainerRef))>

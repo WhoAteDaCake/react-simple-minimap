@@ -51,10 +51,11 @@ let throttle = (f, t) => {
     switch timeout^ {
     | Some(time) =>
       if (Js.Date.now() -. time >= wait) {
+        timeout := Some(Js.Date.now());
         f(x, y);
       }
     | None =>
-      f(x, y);
       timeout := Some(Js.Date.now());
+      f(x, y);
     };
 };
