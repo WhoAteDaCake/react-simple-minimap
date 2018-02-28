@@ -11,32 +11,29 @@ type minimapProps = {
   left: int
 };
 
-type spec = {
-  markers,
-  minimapProps
-};
-
 let toStyle = (n1, n2) => Maths.Mult.ifToF(n1, n2) |> Utils.Css.floatToPx;
 
-let create = (element, selector, minimapW, minimapH, markerColor) : spec => {
-  let scroll = Utils.elemScroll(element);
-  let sourceRect = Element.getBoundingClientRect(element);
+let create = (element, selector, minimapW, minimapH, markerColor) : markers => {
+  let (rect, scroll) = Utils.elemRectAndScroll(element);
   let ratioX = Maths.Div.iiToF(minimapW, scroll.width);
   let ratioY = Maths.Div.iiToF(minimapH, scroll.height);
+  let markerRects =
+    Element.querySelectorAll(selector, element)
+    |> NodeList.toArray
+    |> Array.map(Utils.nodeToRect);
   let markers =
     Array.mapi(
-      (i, node) => {
-        let markerRect = Utils.nodeToRect(node);
+      (i, markerRect) => {
         let width = toStyle(DomRect.width(markerRect), ratioX);
         let height = toStyle(DomRect.height(markerRect), ratioY);
         let left =
           toStyle(
-            DomRect.left(markerRect) + scroll.left - DomRect.left(sourceRect),
+            DomRect.left(markerRect) + scroll.left - DomRect.left(rect),
             ratioX
           );
         let top =
           toStyle(
-            DomRect.top(markerRect) + scroll.top - DomRect.top(sourceRect),
+            DomRect.top(markerRect) + scroll.top - DomRect.top(rect),
             ratioY
           );
         let style =
@@ -50,11 +47,7 @@ let create = (element, selector, minimapW, minimapH, markerColor) : spec => {
           );
         <div key=(string_of_int(i)) style className="minimap-children" />;
       },
-      Element.querySelectorAll(selector, element) |> NodeList.toArray
+      markerRects
     );
-  let minimapProps = {
-    top: DomRect.top(sourceRect),
-    left: DomRect.left(sourceRect) + scroll.width - minimapW - 5
-  };
-  {markers, minimapProps};
+  markers;
 };

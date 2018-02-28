@@ -3,6 +3,28 @@ module Element = Webapi.Dom.Element;
 module Css = {
   let intToPx = n => string_of_int(n) ++ "px";
   let floatToPx = n => string_of_float(n) ++ "px";
+  type styleInput =
+    | IntVals(int, int, int, int)
+    | FloatVals(float, float, float, float);
+  let coordsStyle = (input: styleInput) =>
+    switch input {
+    | IntVals(width, height, top, left) =>
+      ReactDOMRe.Style.make(
+        ~width=intToPx(width),
+        ~height=intToPx(height),
+        ~top=intToPx(top),
+        ~left=intToPx(left),
+        ()
+      )
+    | FloatVals(width, height, top, left) =>
+      ReactDOMRe.Style.make(
+        ~width=floatToPx(width),
+        ~height=floatToPx(height),
+        ~top=floatToPx(top),
+        ~left=floatToPx(left),
+        ()
+      )
+    };
 };
 
 type scroll = {
@@ -12,8 +34,9 @@ type scroll = {
   left: int
 };
 
-let nodeToRect = node =>
-  Element.ofNode(node) |> Js.Option.getExn |> Element.getBoundingClientRect;
+let nodeToElem = node => Element.ofNode(node) |> Js.Option.getExn;
+
+let nodeToRect = node => nodeToElem(node) |> Element.getBoundingClientRect;
 
 let elemScroll = element => {
   width: Element.scrollWidth(element),
@@ -21,6 +44,11 @@ let elemScroll = element => {
   top: Element.scrollTop(element),
   left: Element.scrollLeft(element)
 };
+
+let elemRectAndScroll = element => (
+  Element.getBoundingClientRect(element),
+  elemScroll(element)
+);
 
 let debounce = (f, wait) => {
   let timeout = ref(None);
